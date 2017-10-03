@@ -7,11 +7,11 @@ var abi = require('ethereumjs-abi');
 
 
 router.get('/pending', function(req, res, next) {
-  
-  var config = req.app.get('config');  
+
+  var config = req.app.get('config');
   var web3 = new Web3();
   web3.setProvider(config.provider);
-  
+
   async.waterfall([
     function(callback) {
       web3.parity.pendingTransactions(function(err, result) {
@@ -22,13 +22,13 @@ router.get('/pending', function(req, res, next) {
     if (err) {
       return next(err);
     }
-    
+
     res.render('tx_pending', { txs: txs });
   });
 });
 
 
-router.get('/submit', function(req, res, next) {  
+router.get('/submit', function(req, res, next) {
   res.render('tx_submit', { });
 });
 
@@ -36,11 +36,11 @@ router.post('/submit', function(req, res, next) {
   if (!req.body.txHex) {
     return res.render('tx_submit', { message: "No transaction data specified"});
   }
-  
-  var config = req.app.get('config');  
+
+  var config = req.app.get('config');
   var web3 = new Web3();
   web3.setProvider(config.provider);
-  
+
   async.waterfall([
     function(callback) {
       web3.eth.sendRawTransaction(req.body.txHex, function(err, result) {
@@ -57,25 +57,29 @@ router.post('/submit', function(req, res, next) {
 });
 
 router.get('/:tx', function(req, res, next) {
-  
-  var config = req.app.get('config');  
+
+  var config = req.app.get('config');
   var web3 = new Web3();
   web3.setProvider(config.provider);
-  
+
   var db = req.app.get('db');
-  
+
   async.waterfall([
     function(callback) {
       web3.eth.getTransaction(req.params.tx, function(err, result) {
+
+        result.logs = web3.eth.getTransactionReceipt(result.hash).logs;
         callback(err, result);
       });
     }, function(result, callback) {
+      console.log('tx',result)
       callback(null, result, null);
       //web3.trace.transaction(result.hash, function(err, traces) {
       //  callback(err, result, traces);
       //});
     }, function(tx, traces, callback) {
       db.get(tx.to, function(err, value) {
+        console.log('txtraces',err,value)
         callback(null, tx, traces, value);
       });
     }
@@ -83,38 +87,38 @@ router.get('/:tx', function(req, res, next) {
     if (err) {
       return next(err);
     }
-     
+
     // Try to match the tx to a solidity function call if the contract source is available
     if (source) {
       tx.source = JSON.parse(source);
       var jsonAbi = JSON.parse(tx.source.abi);
-      
+
       var id = tx.input;
       if (id.length > 10) {
         id = id.substr(0, 10);
-      }      
-      
+      }
+
       jsonAbi.forEach(function(item) {
         if (item.type === "function" && !item.constant) {
-          
+
           var functionName = item.name;
           var functionParams = [];
           var functionParamsFull = [];
-          item.inputs.forEach(function(input) { 
+          item.inputs.forEach(function(input) {
             functionParams.push(input.type);
           });
-          
+
           var signature = "0x" + abi.methodID(functionName, functionParams).toString('hex')
-          
-          if (signature === id) {            
+
+          if (signature === id) {
             var pl = tx.input.replace("0x", "");
             pl = pl.substr(8, pl.length - 8);
             var decoded = abi.rawDecode(functionParams, pl);
-            
+
             for(var i = 0; i < functionParams.length; i++) {
               item.inputs[i].result = decoded[i];
             }
-            
+
             tx.callInfo = item;
           }
         }
@@ -135,19 +139,21 @@ router.get('/:tx', function(req, res, next) {
         }
       });
     }
+
+    console.log("LOGS:::",tx.logs,traces,tx)
     // console.log(tx.traces);
 
     res.render('tx', { tx: tx });
   });
-  
+
 });
 
 router.get('/raw/:tx', function(req, res, next) {
-  
-  var config = req.app.get('config');  
+
+  var config = req.app.get('config');
   var web3 = new Web3();
   web3.setProvider(config.provider);
-  
+
   async.waterfall([
     function(callback) {
       web3.eth.getTransaction(req.params.tx, function(err, result) {
