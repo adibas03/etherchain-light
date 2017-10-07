@@ -7,9 +7,12 @@ var web3,wallet,maxThreads = 50,
 txns;
 
 function scanTransactionCallback(txn, block) {
+    var contract;
+    if(!txn.to){
+      contract = web3.eth.getTransactionReceipt(txn.hash).contractAddress;
+    }
 
-
-    if (txn.to === wallet || txn.from === wallet) {
+    if (txn.to === wallet || txn.from === wallet || contract === wallet) {
         // A transaction credited ether into this wallet
         var ether = web3.fromWei(txn.value, 'ether');
         var dir = txn.to === wallet? 'to' : 'from';

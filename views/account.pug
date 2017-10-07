@@ -61,7 +61,10 @@ block content
                   if(txn.to)
                     a(href="/account/" + txn.to) #{nameformatter.format(txn.to)}
                   else
-                    | New Contract
+                    if( txn.contractAddress === account.address)
+                      | New Contract
+                    else
+                      a(href="/account/" + txn.contractAddress) New Contract
                 td #{ethformatter(txn.value)}
 
       if account.isContract
