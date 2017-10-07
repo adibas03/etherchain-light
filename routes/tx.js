@@ -67,19 +67,16 @@ router.get('/:tx', function(req, res, next) {
   async.waterfall([
     function(callback) {
       web3.eth.getTransaction(req.params.tx, function(err, result) {
-
-        result.logs = web3.eth.getTransactionReceipt(result.hash).logs;
+        result.logs = web3.eth.getTransactionReceipt(req.params.tx).logs;
         callback(err, result);
       });
     }, function(result, callback) {
-      console.log('tx',result)
       callback(null, result, null);
       //web3.trace.transaction(result.hash, function(err, traces) {
       //  callback(err, result, traces);
       //});
     }, function(tx, traces, callback) {
       db.get(tx.to, function(err, value) {
-        console.log('txtraces',err,value)
         callback(null, tx, traces, value);
       });
     }
@@ -140,7 +137,6 @@ router.get('/:tx', function(req, res, next) {
       });
     }
 
-    console.log("LOGS:::",tx.logs,traces,tx)
     // console.log(tx.traces);
 
     res.render('tx', { tx: tx });
@@ -168,7 +164,7 @@ router.get('/raw/:tx', function(req, res, next) {
     if (err) {
       return next(err);
     }
-    
+
     tx.traces = traces;
 
     res.render('tx_raw', { tx: tx });
