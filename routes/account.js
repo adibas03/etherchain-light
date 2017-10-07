@@ -15,6 +15,9 @@ router.get('/:account', function(req, res, next) {
 
   var data = {};
 
+  if(!web3.isAddress(req.params.account)){
+    throw new Error(req.params.account+' is not a valid Ethereum address')
+  }
 
   async.waterfall([
     function(callback) {
@@ -42,20 +45,20 @@ router.get('/:account', function(req, res, next) {
       if (code !== "0x") {
         data.isContract = true;
       }
-      
+
       db.get(req.params.account.toLowerCase(), function(err, value) {
         callback(null, value);
       });
     }, function(source, callback) {
-      
+
       if (source) {
         data.source = JSON.parse(source);
-        
+
         var abi = JSON.parse(data.source.abi);
         var contract = web3.eth.contract(abi).at(req.params.account);
-        
+
         data.contractState = [];
-        
+
         async.eachSeries(abi, function(item, eachCallback) {
           if (item.type === "function" && item.inputs.length === 0 && item.constant) {
             try {
