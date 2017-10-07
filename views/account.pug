@@ -58,7 +58,10 @@ block content
                   else
                     span.glyphicon.glyphicon-import(style="color: green;")
                 td
-                  a(href="/account/" + txn.to) #{nameformatter.format(txn.to)}
+                  if(txn.to)
+                    a(href="/account/" + txn.to) #{nameformatter.format(txn.to)}
+                  else
+                    | New Contract
                 td #{ethformatter(txn.value)}
 
       if account.isContract
