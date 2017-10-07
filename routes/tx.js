@@ -124,6 +124,7 @@ router.get('/:tx', function(req, res, next) {
     tx.traces = [];
     tx.failed = false;
     tx.gasUsed = 0;
+    tx.confirmations = Number(web3.eth.blockNumber ) - Number(tx.blockNumber) + 1 ;
     if (traces != null) {
     traces.forEach(function(trace) {
         tx.traces.push(trace);
