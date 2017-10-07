@@ -69,9 +69,9 @@ function scanBlockRange( Web3, address, startingBlock, stoppingBlock, callback) 
               //arrange by increasing blocknumber
                 txns.sort(function(a, b) {
                   if (a.blockNumber < b.blockNumber)
-                    return -1;
-                  if (a.blockNumber > b.blockNumber)
                     return 1;
+                  if (a.blockNumber > b.blockNumber)
+                    return -1;
                   return 0;
                 });
 
