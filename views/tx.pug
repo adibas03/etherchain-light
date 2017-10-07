@@ -41,6 +41,9 @@ block content
                 a(href="/account/" + tx.to) #{nameformatter.format(tx.to)}
               else
                 | New Contract
+                | [ 
+                a(href="/account/" + tx.contractAddress) #{nameformatter.format(tx.contractAddress)}
+                |  ]
           tr
             td Amount:
             td #{ethformatter(tx.value)}
@@ -135,21 +138,28 @@ block content
         h3 Transaction Receipt Event Logs
         table.table
           thead
-            th
+            th.capitatize Index
             th
           tbody
             for log in tx.logs
               tr
                 td
-                  span [ #{tx.logs.indexOf(log)} ]
+                  span [ #{log.logIndex} ]
                 td
-                for o in Object.keys(log)
-                  if( ["blockNumber","transactionHash","transactionIndex","blockHash"].indexOf(o) < 0 )
-                    tr
-                      td.text-left
-                        span.capitalize #{o}:
-                      td
-                        if(o === "address")
-                          a(href="/account/" + log[o]) #{nameformatter.format(log[o])}
-                        else
-                          span #{log[o]}
+                  table.table
+                    for o in Object.keys(log)
+                      if( ["blockNumber","transactionHash","transactionIndex","blockHash","logIndex"].indexOf(o) < 0 )
+                        tr
+                          td.text-left
+                            span.capitalize #{o}:
+                          td
+                            if(o === "address")
+                              a(href="/account/" + log[o]) #{nameformatter.format(log[o])}
+                            else if(o === "topics")
+                              table.table
+                                for t in log[o]
+                                  tr
+                                    td [#{ log[o].indexOf(t) }]
+                                    td #{t}
+                            else
+                              span #{log[o]}

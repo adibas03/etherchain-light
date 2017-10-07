@@ -67,7 +67,9 @@ router.get('/:tx', function(req, res, next) {
   async.waterfall([
     function(callback) {
       web3.eth.getTransaction(req.params.tx, function(err, result) {
-        result.logs = web3.eth.getTransactionReceipt(req.params.tx).logs;
+         var receipt = web3.eth.getTransactionReceipt(req.params.tx);
+         result.logs = receipt.logs;
+         result.contractAddress = receipt.contractAddress;
         callback(err, result);
       });
     }, function(result, callback) {
