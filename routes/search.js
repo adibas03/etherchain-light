@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
+var web3 = new (require('web3'))();
 
 router.post('/', function(req, res, next) {
 	var searchString = req.body.search.trim().toLowerCase();
-	
+
   if (searchString.length > 22 && searchString.substr(0,2) != '0x')
     searchString = '0x' + searchString;
-    
+
 	if (searchString.length === 2) {
 		return next({ message: "Error: Invalid search string!" });
 	} else if (searchString.length < 22) {
@@ -14,8 +15,9 @@ router.post('/', function(req, res, next) {
 		res.redirect('/block/' + searchString);
 	} else if (searchString.length == 66) {
 		res.redirect('/tx/' + searchString);
+	} else if (web3.isAddress(searchString)) {
 	//} else if (searchString.length == 42) {
-	//	res.redirect('/account/' + searchString);
+		res.redirect('/account/' + searchString);
 	} else {
     return next({ message: "Error: Invalid search string!" });
   }
