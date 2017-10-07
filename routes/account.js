@@ -5,15 +5,17 @@ var async = require('async');
 var Web3 = require('web3');
 
 router.get('/:account', function(req, res, next) {
-  
-  var config = req.app.get('config');  
+
+  var config = req.app.get('config');
   var web3 = new Web3();
   web3.setProvider(config.provider);
-  
+
   var db = req.app.get('db');
-  
+  var getAccountTransactions = req.app.get('getAccountTransactions');
+
   var data = {};
-  
+
+
   async.waterfall([
     function(callback) {
       web3.eth.getBlock("latest", false, function(err, result) {
@@ -71,32 +73,39 @@ router.get('/:account', function(req, res, next) {
         }, function(err) {
           callback(err);
         });
-        
+
       } else {
         callback();
       }
-      
-      
+
+
     }, function(callback) {
-      callback(null, null);
+      //callback(null, null);
       //web3.trace.filter({ "fromBlock": "0x" + data.fromBlock.toString(16), "fromAddress": [ req.params.account ] }, function(err, traces) {
       //  callback(err, traces);
       //});
-    }, function(tracesSent, callback) {
+      var from = data.lastBlock > 0x64?data.lastBlock - 0x64:0x00;
+
+      getAccountTransactions(web3,req.params.account,from,data.lastBlock,function(err,res){
+          callback(null,res);
+      })
+
+    }/*, function(tracesSent, callback) {
       data.tracesSent = tracesSent;
       callback(null, null);
       //web3.trace.filter({ "fromBlock": "0x" + data.fromBlock.toString(16), "toAddress": [ req.params.account ] }, function(err, traces) {
       //  callback(err, traces);
       //});
-    }
-  ], function(err, tracesReceived) {
+    }*/
+  ], function(err, traces) {
     if (err) {
       return next(err);
     }
-    
+
     data.address = req.params.account;
+    /*
     data.tracesReceived = tracesReceived;
-    
+
     var blocks = {};
 
     if (data.tracesSent != null) {
@@ -121,24 +130,27 @@ router.get('/:account', function(req, res, next) {
 
     data.tracesSent = null;
     data.tracesReceived = null;
-
+    */
+    data.txns = traces;
+    /*
+    var blocks = [];
     data.blocks = [];
     var txCounter = 0;
     for (var block in blocks) {
       data.blocks.push(blocks[block]);
       txCounter++;
-    }
-    
+    }*/
+
     if (data.source) {
       data.name = data.source.name;
     } else if (config.names[data.address]) {
       data.name = config.names[data.address];
     }
-    
-    data.blocks = data.blocks.reverse().splice(0, 100);
+
+    //data.blocks = data.blocks.reverse().splice(0, 100);*/
     res.render('account', { account: data });
   });
-  
+
 });
 
 module.exports = router;
