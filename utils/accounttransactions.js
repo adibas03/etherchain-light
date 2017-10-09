@@ -9,7 +9,8 @@ txns;
 function scanTransactionCallback(txn, block) {
     var contract;
     if(!txn.to){
-      contract = web3.eth.getTransactionReceipt(txn.hash).contractAddress;
+      var receipt = web3.eth.getTransactionReceipt(txn.hash);
+      contract = receipt?receipt.contractAddress:null;
     }
 
     if (txn.to === wallet || txn.from === wallet || contract === wallet) {
