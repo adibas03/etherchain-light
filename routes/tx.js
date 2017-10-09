@@ -69,7 +69,7 @@ router.get('/:tx', function(req, res, next) {
       web3.eth.getTransaction(req.params.tx, function(err, result) {
          var receipt = web3.eth.getTransactionReceipt(req.params.tx);
          result.logs = receipt.logs;
-         result.contractAddress = receipt.contractAddress;
+         if(receipt.contractAddress)result.contractAddress = receipt.contractAddress;
         callback(err, result);
       });
     }, function(result, callback) {
