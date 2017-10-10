@@ -17,6 +17,7 @@ function scanTransactionCallback(txn, block) {
         // A transaction credited ether into this wallet
         var ether = web3.fromWei(txn.value, 'ether');
         var dir = txn.to === wallet? 'to' : 'from';
+        txn.timestamp = block.timestamp;
         console.log(`\r${block.timestamp} +${ether} ${dir} ${txn.from}`);
         txns.push(txn);
     }

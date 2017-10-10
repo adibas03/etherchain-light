@@ -34,6 +34,7 @@ block content
             tr
               th Hash
               th Block
+              th Age
               th
               th From
               th
@@ -46,6 +47,8 @@ block content
                   a(href="/tx/" + txn.hash)  #{txn.hash.substr(0, 10)}...
                 td
                   a(href="/block/" + txn.blockNumber) #{txn.blockNumber}
+                td
+                  | #{moment.unix(txn.timestamp).fromNow()}
                 td.capitalize
                   if txn.error
                     span(style="color: red", data-toggle="tooltip", data-placement="left", title=txn.error).glyphicon.glyphicon-warning-sign
