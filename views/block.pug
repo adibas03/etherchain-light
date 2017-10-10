@@ -15,13 +15,13 @@ block content
       td Hash:
       td #{block.hash}
     tr
-      td Parent hash: 
-      td 
+      td Parent hash:
+      td
         a(href="/block/" + block.parentHash) #{block.parentHash}
     tr
-      td Miner: 
-      td  
-        a(href="/account/" + block.author) #{nameformatter.format(block.author)}
+      td Miner:
+      td
+        a(href="/account/" + block.miner) #{nameformatter.format(block.miner)}
     tr
       td Gas Limit:
       td #{numeral(block.gasLimit).format()}
@@ -49,7 +49,7 @@ block content
         each uncle, index in block.uncles
           p
             a(href="uncle/" + block.hash + "/" + index) #{index + " - " + uncle}
-  
+
   h4 Transactions
   if block.transactions.length === 0
     p Block does not contain any transactions.

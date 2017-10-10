@@ -30,7 +30,9 @@ router.get('/:block', function(req, res, next) {
       if (!result) {
         return next({name : "BlockNotFoundError", message : "Block not found!"});
       }
-      web3.debug.traceBlockByNumber(result.number, function(err, traces) {
+
+      var hex= web3.toHex(result.number);
+      web3.debug.traceBlockByNumber(hex, function(err, traces) {
         callback(err, result, traces);
       });
     }
@@ -38,11 +40,13 @@ router.get('/:block', function(req, res, next) {
     if (err) {
       return next(err);
     }
-    
+
+    console.log('miner',block.miner)
+
     block.transactions.forEach(function(tx) {
       tx.traces = [];
       tx.failed = false;
-      console.log(traces)
+      //console.log(traces)
       if (traces != null && traces.structLogs != null) {
         traces.structLogs.forEach(function(trace) {
           if (tx.hash === trace.transactionHash) {
@@ -58,15 +62,15 @@ router.get('/:block', function(req, res, next) {
     });
     res.render('block', { block: block });
   });
-  
+
 });
 
 router.get('/uncle/:hash/:number', function(req, res, next) {
-  
-  var config = req.app.get('config');  
+
+  var config = req.app.get('config');
   var web3 = new Web3();
   web3.setProvider(config.provider);
-  
+
   async.waterfall([
     function(callback) {
       web3.eth.getUncle(req.params.hash, req.params.number, true, function(err, result) {
@@ -83,12 +87,12 @@ router.get('/uncle/:hash/:number', function(req, res, next) {
     if (err) {
       return next(err);
     }
-     
+
     console.log(uncle);
-    
+
     res.render('uncle', { uncle: uncle, blockHash: req.params.hash });
   });
-  
+
 });
 
 module.exports = router;
