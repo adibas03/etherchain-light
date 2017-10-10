@@ -45,7 +45,7 @@ block content
                 a(href="/account/" + tx.to) #{nameformatter.format(tx.to)}
               else
                 | New Contract
-                | [
+                | [ 
                 a(href="/account/" + tx.contractAddress) #{nameformatter.format(tx.contractAddress)}
                 |  ]
           tr
