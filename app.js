@@ -40,7 +40,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.locals.moment = require('moment');
+app.locals.moment = require('./utils/timeformatter.js');
 app.locals.numeral = require('numeral');
 app.locals.ethformatter = require('./utils/ethformatter.js');
 app.locals.nameformatter = new(require('./utils/nameformatter.js'))(config);
