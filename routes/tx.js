@@ -159,7 +159,6 @@ router.get('/:tx', function(req, res, next) {
         }
       });
     }
-    console.log('tx',tx)
 
     // console.log(tx.traces);
 
