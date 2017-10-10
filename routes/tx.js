@@ -86,6 +86,7 @@ router.get('/:tx', function(req, res, next) {
            var receipt = web3.eth.getTransactionReceipt(req.params.tx);
            result.logs = receipt?receipt.logs:[];
            if(receipt.contractAddress)result.contractAddress = receipt.contractAddress;
+           result.timestamp = web3.eth.getBlock(receipt.blockNumber).timestamp;
          }
         callback(err, result);
       });
@@ -158,6 +159,7 @@ router.get('/:tx', function(req, res, next) {
         }
       });
     }
+    console.log('tx',tx)
 
     // console.log(tx.traces);
 

@@ -31,6 +31,10 @@ block content
               a(href="/block/" + tx.blockNumber) #{tx.blockNumber}
               |  |  #{tx.confirmations} confirmation(s)
           tr
+            td Timestamp:
+            td
+                | #{moment.unix(tx.timestamp).fromNow()} | #{moment.unix(tx.timestamp).format()}
+          tr
             td From:
             td
               a(href="/account/" + tx.from) #{nameformatter.format(tx.from)}
@@ -41,7 +45,7 @@ block content
                 a(href="/account/" + tx.to) #{nameformatter.format(tx.to)}
               else
                 | New Contract
-                | [ 
+                | [
                 a(href="/account/" + tx.contractAddress) #{nameformatter.format(tx.contractAddress)}
                 |  ]
           tr
