@@ -14,9 +14,24 @@ router.get('/pending', function(req, res, next) {
 
   async.waterfall([
     function(callback) {
-      web3.parity.pendingTransactions(function(err, result) {
+      //web3.parity.pendingTransactions(function(err, result) {
+      var lastblock = web3.eth.blockNumber-1;
+    /*  //filter = web3.eth.filter({fromBlock:lastblock, toBlock: 'pending'});
+      filter = web3.eth.filter({fromBlock:'pending'});
+
+      filter.get(function(err, result) {
+        console.log('filter create',lastblock,err,result)
         callback(err, result);
-      });
+      })*/
+      web3.eth.getBlock('pending', true,function(err, result) {
+        console.log(result)
+        var txns = result.transactions;
+        txns.forEach(function(tn){
+          tn.gasLimit = result.gasLimit;
+          tn.timestamp = result.timestamp;
+        });
+        callback(err, txns);
+      })
     }
   ], function(err, txs) {
     if (err) {
@@ -67,9 +82,11 @@ router.get('/:tx', function(req, res, next) {
   async.waterfall([
     function(callback) {
       web3.eth.getTransaction(req.params.tx, function(err, result) {
-         var receipt = web3.eth.getTransactionReceipt(req.params.tx);
-         result.logs = receipt.logs;
-         if(receipt.contractAddress)result.contractAddress = receipt.contractAddress;
+        if(result){
+           var receipt = web3.eth.getTransactionReceipt(req.params.tx);
+           result.logs = receipt?receipt.logs:[];
+           if(receipt.contractAddress)result.contractAddress = receipt.contractAddress;
+         }
         callback(err, result);
       });
     }, function(result, callback) {
@@ -78,9 +95,11 @@ router.get('/:tx', function(req, res, next) {
       //  callback(err, result, traces);
       //});
     }, function(tx, traces, callback) {
-      db.get(tx.to, function(err, value) {
-        callback(null, tx, traces, value);
-      });
+        if(tx){
+          db.get(tx.to, function(err, value) {
+            callback(null, tx, traces, value);
+          });
+        }
     }
   ], function(err, tx, traces, source) {
     if (err) {

@@ -10,15 +10,19 @@ block content
       thead
         tr
           th Hash
+          th Age
           th From
           th To
           th Amount
+          th Gas Limit
           th Gas Price
       tbody
         for tx in txs
           tr
             td
               a(href="/tx/" + tx.hash)  #{tx.hash.substr(0, 10)}...
+            td
+              | #{moment.unix(tx.timestamp).fromNow()}
             td
               a(href="/account/" + tx.from) #{nameformatter.format(tx.from)}
             td
@@ -27,4 +31,5 @@ block content
               else
                 | New Contract
             td #{ethformatter(tx.value)}
+            td #{ethformatter(tx.gasLimit)}
             td #{ethformatter(tx.gasPrice)}
