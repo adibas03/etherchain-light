@@ -135,7 +135,8 @@ router.get('/:account', function(req, res, next) {
     data.tracesReceived = null;
     */
     traces.forEach(function(t){
-      if(!t.to){
+      if(!t.to || t.to ==  0x0){
+        t.to = null;
         t.contractAddress = web3.eth.getTransactionReceipt(t.hash).contractAddress;
       }
     })

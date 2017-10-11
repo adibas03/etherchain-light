@@ -41,12 +41,10 @@ router.get('/:block', function(req, res, next) {
       return next(err);
     }
 
-    console.log('miner',block.miner)
-
     block.transactions.forEach(function(tx) {
+      if(tx.to == 0x0)tx.to = null;
       tx.traces = [];
       tx.failed = false;
-      //console.log(traces)
       if (traces != null && traces.structLogs != null) {
         traces.structLogs.forEach(function(trace) {
           if (tx.hash === trace.transactionHash) {

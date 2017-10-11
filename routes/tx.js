@@ -27,6 +27,7 @@ router.get('/pending', function(req, res, next) {
         console.log(result)
         var txns = result.transactions;
         txns.forEach(function(tn){
+          if(tn.to == 0x0)tn.to = null;
           tn.gasLimit = result.gasLimit;
           tn.timestamp = result.timestamp;
         });
@@ -83,6 +84,7 @@ router.get('/:tx', function(req, res, next) {
     function(callback) {
       web3.eth.getTransaction(req.params.tx, function(err, result) {
         if(result){
+          if(result.to == 0x0)result.to = null;
            var receipt = web3.eth.getTransactionReceipt(req.params.tx);
            result.logs = receipt?receipt.logs:[];
            if(receipt.contractAddress)result.contractAddress = receipt.contractAddress;

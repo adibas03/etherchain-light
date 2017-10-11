@@ -37,11 +37,13 @@ router.get('/', function(req, res, next) {
     if (err) {
       return next(err);
     }
-    
+
     var txs = [];
     blocks.forEach(function(block) {
       block.transactions.forEach(function(tx) {
-        if (txs.length === 10) {
+        // Store max of 15 blocks
+        if(tx.to == 0x0)tx.to = null;
+        if (txs.length === 15) {
           return;
         }
         txs.push(tx);
