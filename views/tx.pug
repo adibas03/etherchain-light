@@ -45,7 +45,7 @@ block content
                 a(href="/account/" + tx.to) #{nameformatter.format(tx.to)}
               else
                 | New Contract
-                | [ 
+                | [
                 a(href="/account/" + tx.contractAddress) #{nameformatter.format(tx.contractAddress)}
                 |  ]
           tr
@@ -62,7 +62,7 @@ block content
             td #{tx.gasUsed}
           tr
             td Gas Price:
-            td #{ethformatter(tx.gasPrice)}
+            td #{ethformatter(tx.gasPrice,"gwei")}
           tr
             td Fee:
             td #{ethformatter(tx.gasUsed * tx.gasPrice)}

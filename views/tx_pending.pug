@@ -2,7 +2,7 @@ extends layout
 
 block content
   h3 Pending Transactions
-  
+
   if txs.length === 0
     p Currently there are no pending transactions
   else
@@ -32,4 +32,4 @@ block content
                 | New Contract
             td #{ethformatter(tx.value)}
             td #{ethformatter(tx.gasLimit)}
-            td #{ethformatter(tx.gasPrice)}
+            td #{ethformatter(tx.gasPrice,"gwei")}
